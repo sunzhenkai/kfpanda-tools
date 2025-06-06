@@ -10,4 +10,4 @@ DEFINE_string(target, "", "target base (host:port)");
 DEFINE_string(target_base, "", "target base (host:port)");
 DEFINE_string(target_compare, "", "target compare (host:port)");
 
-} // namespace kfpanda
+}  // namespace kfpanda

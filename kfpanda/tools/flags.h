@@ -17,4 +17,4 @@ DECLARE_string(target);
 DECLARE_string(target_base);
 DECLARE_string(target_compare);
 
-} // namespace kfpanda
+}  // namespace kfpanda

@@ -6,10 +6,12 @@
  */
 #pragma once
 
-#include "kfpanda/tools/client.h"
 #include <brpc/controller.h>
 #include <cppcommon/extends/spdlog/log.h>
+
 #include <iostream>
+
+#include "kfpanda/tools/client.h"
 
 namespace kfpanda {
 inline void Stat() {
@@ -24,4 +26,4 @@ inline void Stat() {
     CERROR("request stat failed. [erro={}]", cntl.ErrorText());
   }
 }
-} // namespace kfpanda
+}  // namespace kfpanda
