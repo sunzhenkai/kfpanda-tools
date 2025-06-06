@@ -1,0 +1,23 @@
+{
+  "default-registry": {
+    "kind": "git",
+    "repository": "https://github.com/microsoft/vcpkg.git",
+    "baseline": "782ccc18d8b819cdef6794a6c03eb3d9f7cd04aa"
+  },
+  "registries": [
+    {
+      "kind": "git",
+      "repository": "https://github.com/sunzhenkai/vcpkg-base.git",
+      "baseline": "f4162ae36a20eb91ab4f194b7573340e94e2d025",
+      "reference": "main",
+      "packages": [
+        "apollo-client",
+        "aerospike-client",
+        "babylon",
+        "cpp-common",
+        "kung-fu-panda-protocols",
+        "kfpanda-cpp-sdk"
+      ]
+    }
+  ]
+}

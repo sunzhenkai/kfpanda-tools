@@ -1,0 +1,25 @@
+{
+  "name": "kfpanda-tools",
+  "version": "0.0.1",
+  "homepage": "https://github.com/sunzhenkai/kfpanda-tools",
+  "description": "kfpanda tools",
+  "license": "MIT",
+  "dependencies": [
+    "gtest",
+    "fmt",
+    "rapidjson",
+    "brpc",
+    "kung-fu-panda-protocols",
+    "kfpanda-cpp-sdk",
+    "gflags",
+    "cpp-common",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}
