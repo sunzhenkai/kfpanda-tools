@@ -10,13 +10,15 @@ ProtoLoader::ProtoLoader() : importer_(&source_tree_, &error_collector_), messag
 
 void ProtoLoader::AddImportPathes(const std::vector<std::string>& import_paths) {
   for (const auto& path : import_paths) {
-    source_tree_.MapPath("", path);
+    if (!path.empty()) {
+      source_tree_.MapPath("", path);
+    }
   }
 }
 
 bool ProtoLoader::LoadProtoFiles(const std::vector<std::string>& proto_files) {
   for (const auto& file : proto_files) {
-    if (importer_.Import(file) == nullptr) {
+    if (!file.empty() && importer_.Import(file) == nullptr) {
       return false;
     }
   }

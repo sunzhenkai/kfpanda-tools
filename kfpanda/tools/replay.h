@@ -1,4 +1,3 @@
-
 /**
  * @file replay.h
  * @brief
@@ -28,6 +27,14 @@
 #include "protos/service/kfpanda/kfpanda.pb.h"
 
 namespace kfpanda {
+inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string &data) {
+  auto message = ProtoLoader::Instance().CreateMessage(FLAGS_response_class);
+  if (message != nullptr) {
+    message->ParseFromString(data);
+  }
+  return std::shared_ptr<google::protobuf::Message>(message);
+}
+
 inline void ReplayV1() {
   brpc::Controller controller;
   ::kfpanda::ReplayRequest request;
@@ -40,12 +47,23 @@ inline void ReplayV1() {
 
   Client::Instance().Stub()->Replay(&controller, &request, &response, nullptr);
 
-  std::string js;
-  auto s = google::protobuf::util::MessageToJsonString(response, &js);
-  if (s.ok()) {
-    std::cout << js << std::endl;
+  if (fLS::FLAGS_response_body_type == "protobuf") {
+    for (auto &rsp : response.responses()) {
+      auto m = ParsePbMessage(rsp.body());
+      if (m != nullptr) {
+        std::cout << MessageToString(*m) << std::endl;
+      } else {
+        std::cerr << "parse message body failed" << std::endl;
+      }
+    }
   } else {
-    CERROR("parse response failed. [error={}]", s.message());
+    std::string js;
+    auto s = google::protobuf::util::MessageToJsonString(response, &js);
+    if (s.ok()) {
+      std::cout << js << std::endl;
+    } else {
+      CERROR("parse response failed. [error={}]", s.message());
+    }
   }
 }
 
@@ -56,14 +74,6 @@ inline void InitProtoLoader() {
   cppcommon::StringSplit(proto_files, FLAGS_pb_files, ',');
   ProtoLoader::Instance().AddImportPathes(import_pathes);
   ProtoLoader::Instance().LoadProtoFiles(proto_files);
-}
-
-inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string &data) {
-  auto message = ProtoLoader::Instance().CreateMessage(FLAGS_response_class);
-  if (message != nullptr) {
-    message->ParseFromString(data);
-  }
-  return std::shared_ptr<google::protobuf::Message>(message);
 }
 
 inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &response) {
@@ -79,7 +89,6 @@ inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &respons
     } else if (FLAGS_response_body_type == "json") {
       s = cppcommon::rapidjson::DiffJson(stat, {}, item.base().body(), item.compare().body());
     } else if (FLAGS_response_body_type == "protobuf") {
-      InitProtoLoader();
       auto msg_base = ParsePbMessage(item.base().body());
       auto msg_cmp = ParsePbMessage(item.compare().body());
       if (msg_base == nullptr || msg_cmp == nullptr) {
@@ -125,6 +134,7 @@ inline void ReplayV2() {
 }
 
 inline void Replay() {
+  kfpanda::InitProtoLoader();
   cppcommon::OkOrExit(!FLAGS_service.empty(), "service should not be empty");
   if (FLAGS_target_compare.empty()) {
     auto target = FLAGS_target.empty() ? FLAGS_target_base : FLAGS_target;
