@@ -16,6 +16,7 @@ DECLARE_string(target);
 DECLARE_string(target_base);
 DECLARE_string(target_compare);
 DECLARE_string(pb_files);
+DECLARE_string(pb_import_pathes);
 DECLARE_string(response_class);
 DECLARE_string(response_body_type);
 DECLARE_bool(enable_differ);
