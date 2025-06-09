@@ -15,7 +15,6 @@ std::unordered_map<std::string, std::function<void()>> kFunMaps{
 };
 
 int main(int argc, char **argv) {
-  // CINFO("Run Kung-Fu-Panda Replay Tool. [argv={}]", cppcommon::ToString(argc, argv));
   cppcommon::OkOrExit(argc >= 2, "unpexpected argument count");
   google::SetCommandLineOption("log_dir", "log");
   google::SetCommandLineOption("graceful_quit_on_sigterm", "true");
