@@ -112,3 +112,30 @@ Kung Fu Panda c++ sdk.
   ]
 }
 ```
+
+## Parse Replay Message
+
+```shell
+./build/kfpanda-tools replay \
+  --response_body_type='protobuf' \
+  --pb_import_pathes='/home/wii/code/public/kung-fu-panda-protocols/protos' \
+  --pb_files='service/kfpanda/kfpanda.proto' \
+  --response_body_type=protobuf \
+  --response_class='kfpanda.EchoMessage'
+{"message":"hello kfpanda"}
+```
+
+## Replay With Differ
+
+```shell
+./build/kfpanda-tools replay \
+  --response_body_type='protobuf' \
+  --target_base='127.0.0.1:9820' \
+  --target_compare='127.0.0.1:9820' \
+  --pb_import_pathes='/home/wii/code/public/kung-fu-panda-protocols/protos' \
+  --pb_files='service/kfpanda/kfpanda.proto' \
+  --response_body_type=protobuf \
+  --response_class='kfpanda.EchoMessage'
+--- Summary ---
+total=1, diff=0, same=1
+```
