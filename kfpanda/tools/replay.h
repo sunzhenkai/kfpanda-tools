@@ -6,12 +6,16 @@
  * @date 2025-06-06 17:08:13
  */
 #pragma once
+#include <absl/status/status.h>
 #include <brpc/controller.h>
+#include <google/protobuf/message.h>
 #include <spdlog/spdlog.h>
 
 #include <iostream>
+#include <memory>
 #include <string>
 
+#include "butil/base64.h"
 #include "cppcommon/extends/rapidjson/differ.h"
 #include "cppcommon/extends/spdlog/log.h"
 #include "cppcommon/utils/error.h"
@@ -43,14 +47,32 @@ inline void ReplayV1() {
   }
 }
 
+inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string &data) {
+  // FIXME:
+  return std::make_shared<kfpanda::RecordRequest>();
+}
+
 inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &response) {
   cppcommon::rapidjson::BatchDiffResultStat stat;
   for (auto &item : response.responses()) {
     cppcommon::rapidjson::DiffResult dr;
     // auto s = cppcommon::rapidjson::DiffJson(stat, {}, item.base().body(), item.compare().body());
-    auto sa = MessageToString(item.base());
-    auto sb = MessageToString(item.compare());
-    auto s = cppcommon::rapidjson::DiffJson(stat, {}, sa.value(), sb.value());
+    absl::Status s;
+    if (FLAGS_response_body_type == "text") {
+      auto sa = MessageToString(item.base());
+      auto sb = MessageToString(item.compare());
+      s = cppcommon::rapidjson::DiffJson(stat, {}, sa.value(), sb.value());
+    } else if (FLAGS_response_body_type == "json") {
+      s = cppcommon::rapidjson::DiffJson(stat, {}, item.base().body(), item.compare().body());
+    } else if (FLAGS_response_body_type == "protobuf") {
+      auto msg_base = ParsePbMessage(item.base().body());
+      auto msg_base_str = MessageToString(*msg_base).value();
+      auto msg_cmp = ParsePbMessage(item.compare().body());
+      auto msg_cmp_str = MessageToString(*msg_cmp).value();
+      s = cppcommon::rapidjson::DiffJson(stat, {}, msg_base_str, msg_cmp_str);
+    } else {
+      s = absl::InternalError("unknown response bod type " + FLAGS_response_body_type);
+    }
     if (!s.ok()) {
       spdlog::error("compare failed: {}", s.ToString());
     }
