@@ -8,7 +8,7 @@
     {
       "kind": "git",
       "repository": "https://github.com/sunzhenkai/vcpkg-base.git",
-      "baseline": "c8fb765124b777e3d474b69501c205a878d68576",
+      "baseline": "4c7599e52925ebdb1f061b0c7109493d5fa5d2d3",
       "reference": "main",
       "packages": [
         "apollo-client",

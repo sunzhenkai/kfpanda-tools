@@ -12,6 +12,7 @@
 #include "cppcommon/partterns/singleton.h"
 #include "cppcommon/utils/error.h"
 #include "kfpanda/client/client.h"
+#include "kfpanda/client/debug_client.h"
 #include "kfpanda/tools/flags.h"
 
 namespace kfpanda {
@@ -23,7 +24,15 @@ class Client : public KfpandaClient, public cppcommon::Singleton<kfpanda::Client
   }
 };
 
-inline std::shared_ptr<brpc::Channel> GenChannel() {
+class DebugClient : public KfPandaDebugClient, public cppcommon::Singleton<kfpanda::DebugClient> {
+ public:
+  DebugClient() : KfPandaDebugClient(FLAGS_server) {
+    auto s = Init();
+    cppcommon::OkOrExit(s.ok(), "connecting to server failed");
+  }
+};
+
+inline std::shared_ptr<brpc::Channel> GenServerChannel() {
   std::shared_ptr<brpc::Channel> ret = std::make_shared<brpc::Channel>();
   brpc::ChannelOptions options;
   options.protocol = brpc::PROTOCOL_HTTP;
