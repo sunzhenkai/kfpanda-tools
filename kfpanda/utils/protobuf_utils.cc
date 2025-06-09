@@ -1,5 +1,7 @@
 #include "protobuf_utils.h"
 
+#include <spdlog/spdlog.h>
+
 #include <fstream>
 #include <string>
 #include <vector>
