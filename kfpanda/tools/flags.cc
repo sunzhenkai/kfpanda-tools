@@ -9,5 +9,6 @@ DEFINE_int32(count, 1, "count");
 DEFINE_string(target, "", "target base (host:port)");
 DEFINE_string(target_base, "", "target base (host:port)");
 DEFINE_string(target_compare, "", "target compare (host:port)");
+DEFINE_bool(enable_differ, true, "print differ info");
 
 }  // namespace kfpanda

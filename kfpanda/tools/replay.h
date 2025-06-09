@@ -7,16 +7,19 @@
  */
 #pragma once
 #include <brpc/controller.h>
+#include <spdlog/spdlog.h>
 
 #include <iostream>
 #include <string>
 
+#include "cppcommon/extends/rapidjson/differ.h"
 #include "cppcommon/extends/spdlog/log.h"
 #include "cppcommon/utils/error.h"
 #include "google/protobuf/util/json_util.h"
 #include "kfpanda/tools/client.h"
 #include "kfpanda/tools/flags.h"
 #include "protos/service/kfpanda/kfpanda.pb.h"
+#include "utils.h"
 
 namespace kfpanda {
 inline void ReplayV1() {
@@ -40,6 +43,21 @@ inline void ReplayV1() {
   }
 }
 
+inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &response) {
+  cppcommon::rapidjson::BatchDiffResultStat stat;
+  for (auto &item : response.responses()) {
+    cppcommon::rapidjson::DiffResult dr;
+    // auto s = cppcommon::rapidjson::DiffJson(stat, {}, item.base().body(), item.compare().body());
+    auto sa = MessageToString(item.base());
+    auto sb = MessageToString(item.compare());
+    auto s = cppcommon::rapidjson::DiffJson(stat, {}, sa.value(), sb.value());
+    if (!s.ok()) {
+      spdlog::error("compare failed: {}", s.ToString());
+    }
+  }
+  std::cout << stat.ToString();
+}
+
 inline void ReplayV2() {
   brpc::Controller controller;
   ::kfpanda::ReplayRequestV2 request;
@@ -51,12 +69,17 @@ inline void ReplayV2() {
   request.mutable_target_compare()->set_host(FLAGS_target_compare);
 
   Client::Instance().Stub()->ReplayV2(&controller, &request, &response, nullptr);
-  std::string js;
-  auto s = google::protobuf::util::MessageToJsonString(response, &js);
-  if (s.ok()) {
-    std::cout << js << std::endl;
+
+  if (FLAGS_enable_differ) {
+    PrintReplayResponseDiffer(response);
   } else {
-    CERROR("parse response failed. [error={}]", s.message());
+    std::string js;
+    auto s = google::protobuf::util::MessageToJsonString(response, &js);
+    if (s.ok()) {
+      std::cout << js << std::endl;
+    } else {
+      CERROR("parse response failed. [error={}]", s.message());
+    }
   }
 }
 

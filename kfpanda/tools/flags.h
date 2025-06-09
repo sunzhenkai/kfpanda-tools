@@ -16,5 +16,6 @@ DECLARE_int32(count);
 DECLARE_string(target);
 DECLARE_string(target_base);
 DECLARE_string(target_compare);
+DECLARE_bool(enable_differ);
 
 }  // namespace kfpanda
