@@ -54,7 +54,7 @@ inline void ReplayV1() {
 
   Client::Instance().Stub()->Replay(&controller, &request, &response, nullptr);
 
-  if (fLS::FLAGS_response_body_type == "protobuf") {
+  if (FLAGS_response_body_type == "protobuf") {
     for (auto &rsp : response.responses()) {
       auto m = ParsePbMessage(rsp.body());
       if (m != nullptr) {
@@ -63,6 +63,10 @@ inline void ReplayV1() {
       } else {
         std::cerr << "parse message body failed" << std::endl;
       }
+    }
+  } else if (FLAGS_response_body_type == "json") {
+    for (auto &rsp : response.responses()) {
+      std::cout << std::string(rsp.body()) << std::endl;
     }
   } else {
     std::string js;
