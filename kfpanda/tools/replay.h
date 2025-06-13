@@ -44,6 +44,8 @@ inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::stri
 
 inline void ReplayV1() {
   brpc::Controller controller;
+  controller.set_timeout_ms(1000 * 60 * 15);  // 15min
+
   ::kfpanda::ReplayRequest request;
   ::kfpanda::ReplayResponse response;
 
@@ -122,6 +124,7 @@ inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &respons
 
 inline void ReplayV2() {
   brpc::Controller controller;
+  controller.set_timeout_ms(1000 * 60 * 15);  // 15min
   ::kfpanda::ReplayRequestV2 request;
   ::kfpanda::ReplayResponseV2 response;
 
