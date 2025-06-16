@@ -92,16 +92,25 @@ inline void InitProtoLoader() {
 
 inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &response) {
   cppcommon::rapidjson::BatchDiffResultStat stat;
+  std::vector<std::string> xpath_filter;
+  std::vector<std::string> xpath_ignore;
+  cppcommon::StringSplit(xpath_filter, FLAGS_filter, ',', true);
+  cppcommon::StringSplit(xpath_ignore, FLAGS_ignore, ',', true);
+
+  cppcommon::CompareOptions cmp_options{
+      .filter_pathes = xpath_filter,
+      .ignore_pathes = xpath_ignore,
+  };
+
   for (auto &item : response.responses()) {
     cppcommon::rapidjson::DiffResult dr;
-    // auto s = cppcommon::rapidjson::DiffJson(stat, {}, item.base().body(), item.compare().body());
     absl::Status s;
     if (FLAGS_response_body_type == "text") {
       auto sa = MessageToString(item.base());
       auto sb = MessageToString(item.compare());
-      s = cppcommon::rapidjson::DiffJson(stat, {}, sa.value(), sb.value());
+      s = cppcommon::rapidjson::DiffJson(stat, cmp_options, sa.value(), sb.value(), true);
     } else if (FLAGS_response_body_type == "json") {
-      s = cppcommon::rapidjson::DiffJson(stat, {}, item.base().body(), item.compare().body());
+      s = cppcommon::rapidjson::DiffJson(stat, cmp_options, item.base().body(), item.compare().body(), true);
     } else if (FLAGS_response_body_type == "protobuf") {
       auto msg_base = ParsePbMessage(item.base().body());
       auto msg_cmp = ParsePbMessage(item.compare().body());
@@ -110,7 +119,7 @@ inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &respons
       } else {
         auto msg_base_str = MessageToString(*msg_base).value();
         auto msg_cmp_str = MessageToString(*msg_cmp).value();
-        s = cppcommon::rapidjson::DiffJson(stat, {}, msg_base_str, msg_cmp_str);
+        s = cppcommon::rapidjson::DiffJson(stat, cmp_options, msg_base_str, msg_cmp_str, true);
       }
     } else {
       s = absl::InternalError("unknown response bod type " + FLAGS_response_body_type);

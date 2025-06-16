@@ -19,5 +19,7 @@ DECLARE_string(pb_files);
 DECLARE_string(pb_import_pathes);
 DECLARE_string(response_class);
 DECLARE_string(response_body_type);
+DECLARE_string(filter);
+DECLARE_string(ignore);
 DECLARE_bool(enable_differ);
 }  // namespace kfpanda
