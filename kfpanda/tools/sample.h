@@ -33,4 +33,6 @@ inline void Sample() {
     CERROR("request stat failed. [erro={}]", cntl.ErrorText());
   }
 }
+
+inline void SampleV2() {}
 }  // namespace kfpanda

@@ -12,12 +12,15 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "cppcommon/partterns/singleton.h"
 
 namespace kfpanda {
+inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string& data);
+
 class DummyErrorCollector : public google::protobuf::compiler::MultiFileErrorCollector {
  public:
   inline void RecordError(absl::string_view filename, int line, int column, absl::string_view message) {

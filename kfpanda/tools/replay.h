@@ -13,7 +13,6 @@
 #include <spdlog/spdlog.h>
 
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,20 +27,6 @@
 #include "protos/service/kfpanda/kfpanda.pb.h"
 
 namespace kfpanda {
-inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string &data) {
-  std::string data_raw;
-  butil::Base64Decode(data, &data_raw);
-  auto message = ProtoLoader::Instance().CreateMessage(FLAGS_response_class);
-  if (message != nullptr) {
-    if (!message->ParseFromString(data_raw)) {
-      std::cerr << "parse message from failed, response class: " << FLAGS_response_class << std::endl;
-    }
-  } else {
-    std::cerr << "create message from failed, response class: " << FLAGS_response_class << std::endl;
-  }
-  return std::shared_ptr<google::protobuf::Message>(message);
-}
-
 inline void ReplayV1() {
   brpc::Controller controller;
   controller.set_timeout_ms(1000 * 60 * 15);  // 15min
