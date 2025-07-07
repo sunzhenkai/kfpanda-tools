@@ -66,15 +66,6 @@ inline void ReplayV1() {
   }
 }
 
-inline void InitProtoLoader() {
-  std::vector<std::string> import_pathes;
-  std::vector<std::string> proto_files;
-  cppcommon::StringSplit(import_pathes, FLAGS_pb_import_pathes, ',');
-  cppcommon::StringSplit(proto_files, FLAGS_pb_files, ',');
-  ProtoLoader::Instance().AddImportPathes(import_pathes);
-  ProtoLoader::Instance().LoadProtoFiles(proto_files);
-}
-
 inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &response) {
   cppcommon::rapidjson::BatchDiffResultStat stat;
   std::vector<std::string> xpath_filter;
@@ -143,7 +134,6 @@ inline void ReplayV2() {
 }
 
 inline void Replay() {
-  kfpanda::InitProtoLoader();
   cppcommon::OkOrExit(!FLAGS_service.empty(), "service should not be empty");
   if (FLAGS_target_compare.empty()) {
     auto target = FLAGS_target.empty() ? FLAGS_target_base : FLAGS_target;

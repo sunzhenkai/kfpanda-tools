@@ -21,7 +21,7 @@ std::unordered_map<std::string, std::function<void()>> kFunMaps{
 };
 
 absl::Status Init() {
-  // kfpanda::InitProtoLoader();
+  kfpanda::InitProtoLoader();
   return absl::OkStatus();
 }
 

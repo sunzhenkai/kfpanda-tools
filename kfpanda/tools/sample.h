@@ -54,10 +54,7 @@ inline void SampleV2() {
     req.ParseFromString(rsp);
 
     if (FLAGS_response_body_type == "protobuf") {
-      std::string js;
-      auto s = google::protobuf::util::MessageToJsonString(req, &js);
-      std::cout << js << std::endl;
-      auto m = ParsePbMessage(req.data());
+      auto m = ParsePbMessage(req.data(), false);
       if (m != nullptr) {
         auto sor = MessageToString(*m);
         std::cout << sor.value() << std::endl;

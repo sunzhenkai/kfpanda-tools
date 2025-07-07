@@ -62,10 +62,10 @@ std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string& dat
   auto message = ProtoLoader::Instance().CreateMessage(FLAGS_response_class);
   if (message != nullptr) {
     if (!message->ParseFromString(data_raw)) {
-      std::cerr << "parse message from failed, response class: " << FLAGS_response_class << std::endl;
+      std::cerr << "parse message from string failed, response class: " << FLAGS_response_class << std::endl;
     }
   } else {
-    std::cerr << "create message from failed, response class: " << FLAGS_response_class << std::endl;
+    std::cerr << "create message failed, response class: " << FLAGS_response_class << std::endl;
   }
   return std::shared_ptr<google::protobuf::Message>(message);
 }
