@@ -52,9 +52,13 @@ google::protobuf::Message* ProtoLoader::CreateMessage(const std::string& type_na
   return message_factory_.GetPrototype(descriptor)->New();
 }
 
-inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string& data) {
+std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string& data, bool base64_decode) {
   std::string data_raw;
-  butil::Base64Decode(data, &data_raw);
+  if (base64_decode) {
+    butil::Base64Decode(data, &data_raw);
+  } else {
+    data_raw = data;
+  }
   auto message = ProtoLoader::Instance().CreateMessage(FLAGS_response_class);
   if (message != nullptr) {
     if (!message->ParseFromString(data_raw)) {

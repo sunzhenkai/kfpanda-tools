@@ -19,7 +19,7 @@
 #include "cppcommon/partterns/singleton.h"
 
 namespace kfpanda {
-inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string& data);
+std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string& data, bool base64_decode = true);
 
 class DummyErrorCollector : public google::protobuf::compiler::MultiFileErrorCollector {
  public:
