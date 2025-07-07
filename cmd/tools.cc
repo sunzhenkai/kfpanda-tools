@@ -17,11 +17,11 @@ std::unordered_map<std::string, std::function<void()>> kFunMaps{
     {"replay", kfpanda::Replay},
     {"stat", kfpanda::Stat},
     {"record", kfpanda::Record},
-    {"sample", kfpanda::Sample},
+    {"sample", kfpanda::SampleV2},
 };
 
 absl::Status Init() {
-  // kfpanda::InitProtoLoader();
+  kfpanda::InitProtoLoader();
   return absl::OkStatus();
 }
 

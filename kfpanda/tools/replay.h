@@ -13,7 +13,6 @@
 #include <spdlog/spdlog.h>
 
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,20 +27,6 @@
 #include "protos/service/kfpanda/kfpanda.pb.h"
 
 namespace kfpanda {
-inline std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string &data) {
-  std::string data_raw;
-  butil::Base64Decode(data, &data_raw);
-  auto message = ProtoLoader::Instance().CreateMessage(FLAGS_response_class);
-  if (message != nullptr) {
-    if (!message->ParseFromString(data_raw)) {
-      std::cerr << "parse message from failed, response class: " << FLAGS_response_class << std::endl;
-    }
-  } else {
-    std::cerr << "create message from failed, response class: " << FLAGS_response_class << std::endl;
-  }
-  return std::shared_ptr<google::protobuf::Message>(message);
-}
-
 inline void ReplayV1() {
   brpc::Controller controller;
   controller.set_timeout_ms(1000 * 60 * 15);  // 15min
@@ -79,15 +64,6 @@ inline void ReplayV1() {
       CERROR("parse response failed. [error={}]", s.message());
     }
   }
-}
-
-inline void InitProtoLoader() {
-  std::vector<std::string> import_pathes;
-  std::vector<std::string> proto_files;
-  cppcommon::StringSplit(import_pathes, FLAGS_pb_import_pathes, ',');
-  cppcommon::StringSplit(proto_files, FLAGS_pb_files, ',');
-  ProtoLoader::Instance().AddImportPathes(import_pathes);
-  ProtoLoader::Instance().LoadProtoFiles(proto_files);
 }
 
 inline void PrintReplayResponseDiffer(const ::kfpanda::ReplayResponseV2 &response) {
@@ -158,7 +134,6 @@ inline void ReplayV2() {
 }
 
 inline void Replay() {
-  kfpanda::InitProtoLoader();
   cppcommon::OkOrExit(!FLAGS_service.empty(), "service should not be empty");
   if (FLAGS_target_compare.empty()) {
     auto target = FLAGS_target.empty() ? FLAGS_target_base : FLAGS_target;

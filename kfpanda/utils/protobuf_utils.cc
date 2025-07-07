@@ -1,10 +1,16 @@
 #include "protobuf_utils.h"
 
+#include <brpc/controller.h>
 #include <spdlog/spdlog.h>
 
 #include <fstream>
+#include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "butil/base64.h"
+#include "kfpanda/tools/flags.h"
 
 namespace kfpanda {
 
@@ -44,6 +50,24 @@ google::protobuf::Message* ProtoLoader::CreateMessage(const std::string& type_na
   const auto* descriptor = importer_.pool()->FindMessageTypeByName(type_name);
   if (!descriptor) return nullptr;
   return message_factory_.GetPrototype(descriptor)->New();
+}
+
+std::shared_ptr<google::protobuf::Message> ParsePbMessage(const std::string& data, bool base64_decode) {
+  std::string data_raw;
+  if (base64_decode) {
+    butil::Base64Decode(data, &data_raw);
+  } else {
+    data_raw = data;
+  }
+  auto message = ProtoLoader::Instance().CreateMessage(FLAGS_response_class);
+  if (message != nullptr) {
+    if (!message->ParseFromString(data_raw)) {
+      std::cerr << "parse message from string failed, response class: " << FLAGS_response_class << std::endl;
+    }
+  } else {
+    std::cerr << "create message failed, response class: " << FLAGS_response_class << std::endl;
+  }
+  return std::shared_ptr<google::protobuf::Message>(message);
 }
 
 }  // namespace kfpanda
