@@ -64,7 +64,12 @@ inline void SampleV2() {
     } else if (FLAGS_response_body_type == "json") {
       std::cout << std::string(req.data()) << std::endl;
     } else {
-      std::cout << std::string(req.data()) << std::endl;
+      auto sor = MessageToString(req);
+      if (sor.ok()) {
+        std::cout << sor.value() << std::endl;
+      } else {
+        std::cerr << "parse message failed" << std::endl;
+      }
     }
   }
 }
