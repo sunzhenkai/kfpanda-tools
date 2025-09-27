@@ -37,7 +37,11 @@ inline void ReplayV1() {
   request.set_service(FLAGS_service);
   request.mutable_option()->set_count(FLAGS_count);
   auto target = FLAGS_target.empty() ? FLAGS_target_base : FLAGS_target;
-  request.mutable_target()->set_host(target);
+  auto s = kfpanda::ParseTarget(request.mutable_target(), target);
+  if (!s.ok()) {
+    std::cerr << s.message() << ": " << target << std::endl;
+    return;
+  }
 
   Client::Instance().Stub()->Replay(&controller, &request, &response, nullptr);
 
@@ -115,8 +119,16 @@ inline void ReplayV2() {
 
   request.set_service(FLAGS_service);
   request.mutable_option()->set_count(FLAGS_count);
-  request.mutable_target_base()->set_host(FLAGS_target_base);
-  request.mutable_target_compare()->set_host(FLAGS_target_compare);
+  auto s = kfpanda::ParseTarget(request.mutable_target_base(), FLAGS_target_base);
+  if (!s.ok()) {
+    std::cerr << s.message() << ": " << FLAGS_target_base << std::endl;
+    return;
+  }
+  s = kfpanda::ParseTarget(request.mutable_target_compare(), FLAGS_target_compare);
+  if (!s.ok()) {
+    std::cerr << s.message() << ": " << FLAGS_target_compare << std::endl;
+    return;
+  }
 
   Client::Instance().Stub()->ReplayV2(&controller, &request, &response, nullptr);
 
